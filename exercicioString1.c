@@ -5,7 +5,7 @@
 //outro caractere ‘1’.
 
 
-char* frase;
+char* frase; //usei ponteiro para treinar
 
 
 int main()
