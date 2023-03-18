@@ -57,7 +57,7 @@ bool isPalindrome(ListNode* head, PILHA *p) {
 
     // Verifica se os valores desempilhados são iguais aos valores da lista
     ptr = head;
-    for (int i = 0; i < tamanho/2; i++) {
+    for (int i = 0; i < tamanho; i++) {
         int valor_lista = ptr->val;
         int valor_pilha = pop(p);
         if (valor_lista != valor_pilha) {
