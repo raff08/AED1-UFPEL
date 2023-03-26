@@ -60,6 +60,3 @@ void pop(PILHA *p){
 }
 
 
-/*A excelência é acompanhada por fazer coisas que não tem nada de excepcional quando separadas, 
-mas que são realizadas de forma consistente até que se torne habitual.    */
-

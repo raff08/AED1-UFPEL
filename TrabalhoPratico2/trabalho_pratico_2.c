@@ -71,13 +71,13 @@ bool isPalindrome(ListNode* head, PILHA *p) {
 int main() {
     // Cria uma lista encadeada
     ListNode *head = (ListNode*) malloc(sizeof(ListNode));
-    head->val = 1;
+    head->val = 2;
     head->next = (ListNode*) malloc(sizeof(ListNode));
-    head->next->val = 2;
+    head->next->val = 1;
     head->next->next = (ListNode*) malloc(sizeof(ListNode));
-    head->next->next->val = 2;
+    head->next->next->val = 1;
     head->next->next->next = (ListNode*) malloc(sizeof(ListNode));
-    head->next->next->next->val = 1;
+    head->next->next->next->val = 2;
     head->next->next->next->next = NULL;
 
     // Cria uma pilha vazia
