@@ -194,7 +194,7 @@ int remove_pessoa(void *pBuffer, void *lista) {
 
 /*------------------BUSCA PESSOAS------------------*/
 int busca_pessoa(void *pBuffer, void *lista) {
-    if (TAMANHO_LISTA == 0) {
+    if (Empty(lista)) {
         printf("\nAgenda vazia! Preencha com alguns registros!\n");
         return -1;
     }
@@ -229,7 +229,7 @@ int busca_pessoa(void *pBuffer, void *lista) {
 /*------------------LISTA PESSOAS------------------*/
 int listar (void *pBuffer, void *lista) {
    
-    if (TAMANHO_LISTA == 0) {
+    if (Empty(lista)) {
         printf ("Agenda  vazia!");
         return -1;
     }
