@@ -17,7 +17,23 @@ arv_bin* cria_arvore(){
     return raiz;
 }
 
+void libera_arvore(arv_bin* raiz) {
+    if (raiz == NULL || *raiz == NULL) {
+        return;
+    }
+    libera_arvore(&((*raiz)->esq));
+    libera_arvore(&((*raiz)->dir));
+    free(*raiz);
+    *raiz = NULL; 
+}
 
+void destroi_arvore(arv_bin* raiz) {
+    if (raiz == NULL) {
+        return;
+    }
+    libera_arvore(raiz);
+    free(raiz);
+}
 
 int insere_elemento(arv_bin *raiz, int valor) {
     
@@ -79,9 +95,6 @@ int calcula_altura(struct NO *raiz){
     return maior(alturaEsquerda, alturaDireita) + 1;
 }
 
-
-
-
 int diametro_arvore (struct NO* raiz) {
 
     if (raiz == NULL) {
@@ -94,35 +107,6 @@ int diametro_arvore (struct NO* raiz) {
     int diametroDireita = diametro_arvore(raiz->dir);
     return maior(alturaEsquerda + alturaDireita, maior(diametroEsquerda, diametroDireita));
 }
-
-
-void emOrdem(arv_bin *raiz){
-    if (raiz == NULL) {
-        return; 
-    }
-
-    if(*raiz != NULL) {
-        emOrdem(&((*raiz)->esq));
-        printf("%d\n",(*raiz)->dado);
-        emOrdem(&((*raiz)->dir));
-    }
-}
-
-void libera_arvore(arv_bin *raiz) {
-    if (raiz == NULL) {
-        return;
-    }
-
-    if (*raiz != NULL) {
-        libera_arvore(&((*raiz)->esq));
-        libera_arvore(&((*raiz)->dir));
-        free(*raiz);
-        *raiz = NULL;
-    }
-
-    free(raiz);
-}
-
 
 
 
@@ -141,10 +125,8 @@ int main() {
 
      int tamanho = diametro_arvore(*raiz);
      printf("O tamanho do diametro da arvore eh %d",tamanho);
-     libera_arvore(raiz);
+     destroi_arvore(raiz);
      
-    
     return 0;
 }
- /* meu racicionio foi percorrer o caminho da arvore recursivamente como se fosse
- uma funçao de pre ordem e conseguir contar e comparar qual é o caminho mais longo */
+ 
