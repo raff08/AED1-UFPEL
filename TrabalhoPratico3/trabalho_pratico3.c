@@ -1,3 +1,6 @@
+// Rafael da Silva de Freitas
+// 20201917
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -108,9 +111,6 @@ int diametro_arvore (struct NO* raiz) {
     return maior(alturaEsquerda + alturaDireita, maior(diametroEsquerda, diametroDireita));
 }
 
-
-
-
 int main() {
     arv_bin* raiz = cria_arvore();
     if (raiz == NULL) {
@@ -122,6 +122,8 @@ int main() {
     insere_elemento(raiz, 3);
     insere_elemento(raiz, 4);
     insere_elemento(raiz, 5);
+     insere_elemento(raiz, 6);
+      insere_elemento(raiz, 7);
 
      int tamanho = diametro_arvore(*raiz);
      printf("O tamanho do diametro da arvore eh %d",tamanho);
