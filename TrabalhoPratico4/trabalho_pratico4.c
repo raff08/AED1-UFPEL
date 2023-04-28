@@ -1,3 +1,5 @@
+//Rafael da Silva de Freitas
+//20201917
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -43,7 +45,7 @@ void maiorSequencia(int vetor[], int tamanho) {
 
 int main() {
     int vetor[] = {2, 1, 3 ,4,10,12};
-    int k = 3;
+    int k = 4;
 
      printf("\n----Vetor original ----");
     printf("\n%d, %d, %d, %d, %d, %d\n", vetor[0], vetor[1], vetor[2], vetor[3], vetor[4], vetor[5]);
