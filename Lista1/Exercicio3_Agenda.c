@@ -1,81 +1,198 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
     char nome[10];
     int idade;
     int telefone;
-}Pessoa;
+} Pessoa;
 
-int menu();
-char *inserirPessoa();
-char *removerPessoa();
-int listarPessoa();
-int buscarPessoa();
+void flush_stdin(){ //limpa quaisquer caracteres restantes do input pelo usuario
+    int c;
+    do {
+        c = fgetc(stdin);
+    } while (c != EOF && c != '\n');
+}
 
+int get_index(char *pBuffer, char *nome){
+    int index;
+    int tamanhoLista = *(int *)pBuffer;
+    Pessoa pessoa;
 
+    for(index = 0; index < tamanhoLista; index++){
+        pessoa = *(Pessoa *)(pBuffer + sizeof(int) + (sizeof(Pessoa) * index));
 
-
-int main() {
-    int opcao;
-    void *pBuffer = malloc(sizeof(int));
-   
-   
-    if (!pBuffer) {
-        printf("Erro ao alocar memoria!\n");
-        return -1;
+        if((strcmp(pessoa.nome, nome)) == 0){
+            printf("\nOperacao realizada com sucesso!\n");
+            return index;
+        }
     }
 
-    *(int *)pBuffer = 0;
+    //caso não caia em nenhuma condicao do loop acima
+    printf("\nNao foi possivel localizar o registro!\n");
+    return -1;
+}
 
-    do {
-       opcao = menu();
+char *remover_pessoa(char *pBuffer){
+    int index = -1;
+    int proxIndex;
+    int antigaLista = *(int *)pBuffer;
+    int novaLista;
+    char rmvNome[10];
+    Pessoa pessoa;
 
-       switch (opcao) {
-        
-        case 1:
-            getchar();
-            pBuffer = inserirPessoa(pBuffer);
-            break;
-       
-        case 2:
-            getchar();
-            pBuffer = removerPessoa(pBuffer);
-            break;
-        
-        case 3:
-            getchar();
-            pBuffer = listarPessoa(pBuffer);
-            break;
+    if(antigaLista == 0){
+        novaLista = 0;
+    } else {
+        novaLista = antigaLista - 1;
+    }
 
-        case 4:
-            getchar();
-            pBuffer = buscarPessoa(pBuffer);
-            break;
-
-        case 5:
-            getchar();
-            printf("\nVoce saiu!");
-            free(pBuffer);
-            exit(0);
-            break;
-       }
-    } while (opcao != 5);
+    printf("\n-- Digite o nome da pessoa que deseja apagar da agenda: ");
+    scanf("%10s^\n", rmvNome);
+    flush_stdin();
     
+    index = get_index(pBuffer, rmvNome);
+    if(index == -1){
+        return NULL;
+    }
+
+    proxIndex = index + 1;
+
+    //a partir do index, traz as informações um indice para trás, para poder diminuir o tamanho do buffer no final
+    while(proxIndex < antigaLista){
+        pessoa = *(Pessoa *)(pBuffer + sizeof(int) + (sizeof(Pessoa) * proxIndex));
+        *(Pessoa *)(pBuffer + sizeof(int) + (sizeof(Pessoa) * index)) = pessoa;
+        index++;
+        proxIndex++;
+    }
+ 
+    pBuffer = realloc(pBuffer, sizeof(int) + (sizeof(Pessoa) * novaLista));
+    *(int *)pBuffer = novaLista;
     
+    return pBuffer;
+}
+
+char *adiciona_pessoa(char *pBuffer){
+    int antigaLista = *(int *)pBuffer;
+    int novaLista = antigaLista + 1;
+    Pessoa pessoa;
+
+    printf("\n-- Prossiga com as informacoes da pessoa que deseja incluir:\n\n");
+	printf("\t Nome: ");
+    scanf("%10s^\n", pessoa.nome);
+    flush_stdin();
+	printf("\t Idade: ");
+    scanf("%i", &pessoa.idade);
+	printf("\t Telefone: ");
+    scanf("%i", &pessoa.telefone);
+    
+    pBuffer = realloc(pBuffer, sizeof(int) + (sizeof(Pessoa) * novaLista));
+    if (!pBuffer){
+        printf("\nErro ao alocar memoria!\n");
+        return NULL;
+    }
+
+    *(Pessoa *)(pBuffer + sizeof(int) + (sizeof(Pessoa) * antigaLista)) = pessoa;
+    *(int *)pBuffer = novaLista;
+    return pBuffer;
+}
+
+int procura_pessoa(char *pBuffer){
+    int index = -1;
+    int tamanhoLista = *(int *)pBuffer;
+    char nome[10];
+    Pessoa pessoa;
+
+    printf("\n-- Digite o nome da pessoa que deseja buscar: ");
+    scanf("%10s^\n", nome);
+    flush_stdin();
+
+    index = get_index(pBuffer, nome);
+    if(index == -1){
+        return -1;
+    } else {
+        pessoa = *(Pessoa *)(pBuffer + sizeof(int) + (sizeof(Pessoa) * index));
+        printf("\nREGISTRO %i: \n", index + 1);
+        printf("\nNome: %s", pessoa.nome);
+        printf("\nIdade: %i", pessoa.idade);
+        printf("\nTelefone: %i\n", pessoa.telefone);
+    }
+
+    return 0;
+}
+
+int listar(char *pBuffer){
+    int i = 0;
+    int tamanhoLista = *(int *)pBuffer;
+    Pessoa pessoa;
+
+    if (tamanhoLista != 0){
+        printf("\n-- LISTA DE PESSOAS REGISTRADAS:\n");
+        for(i = 0; i < tamanhoLista; i++){
+            pessoa = *(Pessoa *)(pBuffer + sizeof(int) + (sizeof(Pessoa) * i));
+            printf("\nREGISTRO %i: \n", i + 1);
+            printf("\nNome: %s", pessoa.nome);
+            printf("\nIdade: %i", pessoa.idade);
+            printf("\nTelefone: %i\n", pessoa.telefone);
+        }
+    } else {
+        printf("\nAgenda vazia! Preencha-a com alguns registros antes e tente novamente!\n");
+        return -1;
+    }
     return 0;
 }
 
 
-char *inserirPessoa(char *pBuffer) {
+int menu(void){
+	int c = 0;
 
-   
-    Pessoa *pBuffer = (Pessoa *)malloc(sizeof(Pessoa));
+	do {
+		printf("\n-- AGENDA DE PESSOAS:\n\n");
+		printf("\t 1. Incluir registro\n");
+		printf("\t 2. Apagar registro\n");
+		printf("\t 3. Buscar por nome\n");
+		printf("\t 4. Listar registros\n");
+		printf("\t 5. Sair\n");
+		printf("\n-- Digite sua escolha: ");
+		scanf("%d", &c);
+	} while (c <= 0 || c > 5);
+	getchar();
+	return c;
+}
 
-    printf("Digite o nome da pessoa");
-    scanf("%s",&(*pBuffer).nome);
+int main(int argc, char *argv[]){
+    int op;
+
+    void *pBuffer = malloc(sizeof(int));
+    if (!pBuffer) {
+        printf("\nErro ao alocar memoria!\n");
+        return -1;
+    }
+
+    *(int *)pBuffer = 0;
     
 
+    while(op != 5) {
+		op = menu();
+		switch (op) {
+		case 1:
+			pBuffer = adiciona_pessoa(pBuffer);
+			break;
+		case 2:
+			pBuffer = remover_pessoa(pBuffer);
+			break;
+		case 3:
+            procura_pessoa(pBuffer);
+            break;
+        case 4:
+			listar(pBuffer);
+			break;
+		case 5:
+			break;
+		}
+	}
 
+    free(pBuffer);
+	return 0;
 }
